@@ -30,6 +30,13 @@ public:
     uint16_t PM_RAW_2_5;
     uint16_t PM_RAW_5_0;
     uint16_t PM_RAW_10_0;
+
+    // Formaldehyde (HCHO) concentration in mg/m^3 - PMSxxxxST units only
+    uint16_t AMB_HCHO;
+
+    // Temperature & humidity - PMSxxxxST units only
+    int16_t AMB_TMP;
+    uint16_t AMB_HUM;
   };
 
   PMS(Stream&);
@@ -46,7 +53,7 @@ private:
   enum STATUS { STATUS_WAITING, STATUS_OK };
   enum MODE { MODE_ACTIVE, MODE_PASSIVE };
 
-  uint8_t _payload[24];
+  uint8_t _payload[30];
   Stream* _stream;
   DATA* _data;
   STATUS _status;

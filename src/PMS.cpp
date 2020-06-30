@@ -1,4 +1,4 @@
-#include "Arduino.h"
+#include <Arduino.h>
 #include "PMS.h"
 
 PMS::PMS(Stream& stream)
@@ -79,6 +79,7 @@ void PMS::loop()
     switch (_index)
     {
     case 0:
+      // Reset checksum if fixed 0x42 start character arrives (start of stream).
       if (ch != 0x42)
       {
         return;
@@ -87,6 +88,7 @@ void PMS::loop()
       break;
 
     case 1:
+      // Add fixed 0x4D second character to checksum, when it arrives.
       if (ch != 0x4D)
       {
         _index = 0;
@@ -96,14 +98,16 @@ void PMS::loop()
       break;
 
     case 2:
+      // High byte of frame length, add to calculated checksum and shift out the byte to calculate the frame length.
       _calculatedChecksum += ch;
       _frameLen = ch << 8;
       break;
 
     case 3:
+      // Low byte of frame length, add to calculated checksum through an inclusive OR to the frame length.
       _frameLen |= ch;
       // Unsupported sensor, different frame length, transmission error e.t.c.
-      if (_frameLen != 2 * 9 + 2 && _frameLen != 2 * 13 + 2)
+      if (_frameLen != 2 * 9 + 2 && _frameLen != 2 * 13 + 2 && _frameLen != 2 * 17 + 2)
       {
         _index = 0;
         return;
@@ -112,14 +116,17 @@ void PMS::loop()
       break;
 
     default:
+      // High byte of checksum, add to checksum and shift out the byte.
       if (_index == _frameLen + 2)
       {
         _checksum = ch << 8;
       }
       else if (_index == _frameLen + 2 + 1)
       {
+        // Low byte of checksum, add to checksum through an inclusive OR.
         _checksum |= ch;
 
+        // Data is valid and sane, safe to read.
         if (_calculatedChecksum == _checksum)
         {
           _status = STATUS_OK;
@@ -141,6 +148,13 @@ void PMS::loop()
           _data->PM_RAW_2_5 = makeWord(_payload[18], _payload[19]);
           _data->PM_RAW_5_0 = makeWord(_payload[20], _payload[21]);
           _data->PM_RAW_10_0 = makeWord(_payload[22], _payload[23]);
+
+          // Formaldehyde concentration (PMSxxxxST units only)
+          _data->AMB_HCHO = makeWord(_payload[24], _payload[25]) / 1000;
+
+          // Temperature & humidity (PMSxxxxST units only)
+          _data->AMB_TMP = makeWord(_payload[26], _payload[27]) / 10;
+          _data->AMB_HUM = makeWord(_payload[28], _payload[29]) / 10;
         }
 
         _index = 0;

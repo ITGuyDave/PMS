@@ -1,13 +1,15 @@
 Forked library with the following changes:
 - tested sample for using SoftwareSerial
 - readings of raw particle counts added (Particle sizes 0.3, 0.5, 1.0, 2.5, 5.0, 1.0)
+- support for ST-variant sensors (Formaldehyde (HCHO), temperature & humidity)
 
-_Tested on Arduino Nano using PMS 7003._
+_Tested on Arduino Nano using PMS 7003 and Arduino MKR1000 using PMS 5003 ST_
 
 
 # PMS Library
 Arduino library for Plantower PMS sensors.
 Supports PMS x003 sensors (1003, 3003, 5003, 6003, 7003).
+Supports PMS 5003ST sensor (likely other PMSxxxxST models, but untested).
 ## Installation
 Just use Arduino Library Manager and search "PMS Library" in Sensors category.
 ## Main assumptions

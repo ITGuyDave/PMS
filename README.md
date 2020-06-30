@@ -11,7 +11,7 @@ Arduino library for Plantower PMS sensors.
 Supports PMS x003 sensors (1003, 3003, 5003, 6003, 7003).
 Supports PMS 5003ST sensor (likely other PMSxxxxST models, but untested).
 ## Installation
-Just use Arduino Library Manager and search "PMS Library" in Sensors category.
+Just use Arduino Library Manager and search "Plantower PMS Library" in Sensors category.
 ## Main assumptions
 - easy as possible,
 - minimal memory consumption,
@@ -131,6 +131,52 @@ PM 1.0 (ug/m3): 12
 PM 2.5 (ug/m3): 19
 PM 10.0 (ug/m3): 24
 Going to sleep for 60 seconds.
+
+...
+```
+## PMSxxxxST Sensors Basic Example
+Retrieve Formaldehyde (HCHO), Temperature and Humidity. These sensors are all internal to the unit and thus are monitoring conditions from the airflow and may therefore differ from other "ambient" sensor readings.
+```cpp
+#include "PMS.h"
+
+PMS pms(Serial);
+PMS::DATA data;
+
+void setup()
+{
+  Serial.begin(9600);   // GPIO1, GPIO3 (TX/RX pin on ESP-12E Development Board)
+  Serial1.begin(9600);  // GPIO2 (D4 pin on ESP-12E Development Board)
+}
+
+void loop()
+{
+  if (pms.read(data))
+  {
+    // Works for PMS xxxxST sensors only!
+    Serial1.print("Formaldehyde (mg/m3): ");
+    Serial1.println(data.AMB_HCHO);
+
+    Serial1.print("Airflow Temperature (C): ");
+    Serial1.println(data.AMB_TMP);
+
+    Serial1.print("Airflow Humidity (%H): ");
+    Serial1.println(data.AMB_HUM);
+
+    Serial1.println();
+  }
+
+  // Do other stuff...
+}
+```
+## Output
+```
+Formaldehyde (mg/m3): 0
+Airflow Temperature (C): 21.32
+Airflow Humidity (%H): 49.67
+
+Formaldehyde (HCHO): 2
+Airflow Temperature (C): 21.38
+Airflow Humidity (%H): 49.66
 
 ...
 ```

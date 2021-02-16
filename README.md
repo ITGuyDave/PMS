@@ -1,9 +1,8 @@
 Forked library with the following changes:
-- tested sample for using SoftwareSerial
 - readings of raw particle counts added (Particle sizes 0.3, 0.5, 1.0, 2.5, 5.0, 1.0)
 - support for ST-variant sensors (Formaldehyde (HCHO), temperature & humidity)
 
-_Tested on Arduino Nano using PMS 7003 and Arduino MKR1000 using PMS 5003 ST_
+_Tested on Arduino Nano using PMS 7003 and Arduino MKR1000 using PMS 5003ST_
 
 
 # PMS Library
@@ -152,7 +151,7 @@ void loop()
 {
   if (pms.read(data))
   {
-    // Works for PMS xxxxST sensors only!
+    // Works for PMS xxxxST variant sensors only!
     Serial1.print("Formaldehyde (mg/m3): ");
     Serial1.println(data.AMB_HCHO);
 
@@ -182,10 +181,10 @@ Airflow Humidity (%H): 49.66
 ```
 ## Additional remarks
 Tested with PMS 7003 and ESP-12E Development Board.
-All Plantower PMS sensors uses the same protocol (let me know if you have any problems).
+All Plantower PMS sensors use the same protocol
 
 Please consider, that delay() function in examples is a blocking function.  
 Try to avoid such a solution if your project requires it (see Expert.ino example in examples directory).
 
 For more accurate measurements, you can read several samples (in passive or active mode) and calculate the average.
-> Stable data should be got at least 30 seconds after the sensor wakeup from the sleep mode because of the fan's performance.
+> Stable data should be got at least 30 seconds after the sensor wakeup from the sleep mode because of the fan's initial startup disturbing settled dust.
